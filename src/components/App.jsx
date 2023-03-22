@@ -1,6 +1,4 @@
-import React, { Component } from 'react';
-// import { useState, useEffect } from 'react';
-
+import { useState, useEffect } from 'react';
 import css from './App.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,147 +23,70 @@ const notify = () => {
   });
 };
 
-// export default function App() {
-//   const [value, setValue] = useState('');
-//   const [visibleSpinerBool, setVisibleSpinerBool] = useState(false);
-//   const [gallerys, setGallerys] = useState([]);
-//   const [totalHits, setTotalHits] = useState(0);
+export default function App() {
+  const [value, setValue] = useState('');
+  const [visibleSpinerBool, setVisibleSpinerBool] = useState(false);
+  const [gallerys, setGallerys] = useState([]);
+  const [totalHits, setTotalHits] = useState(0);
 
-//   const handleWriteValueInStateOfSubmit = valueString => {
-//     setValue(valueString);
-//     requestApi.resetPage();
-//   };
-
-//   // * Залишилось переробити ...DidUpdate на useEffect
-//   componentDidUpdate(_, prevState) {
-//     if (prevState.value !== this.state.value) {
-//       this.setState({ visibleSpinerBool: true });
-//       requestApi.writeValue = this.state.value;
-
-//       requestApi
-//         .search()
-//         .then(({ data: { totalHits, hits } }) => {
-//           if (totalHits > 0) {
-//             // hits це масив
-//             // console.log(totalHits, total);
-//             this.setState({ gallerys: hits, totalHits });
-//           } else {
-//             notify();
-//           }
-//         })
-//         .catch(console.log)
-//         .finally(this.setState({ visibleSpinerBool: false }));
-//     }
-//   }
-
-//   const handleLoadMore = () => {
-//     setVisibleSpinerBool(true);
-//     setTimeout(() => {
-//       requestApi
-//         .search()
-//         .then(({ data: { hits } }) => {
-//           setGallerys(prevGal => [...hits, ...prevGal]);
-//         })
-//         .catch(console.log)
-//         .finally(setVisibleSpinerBool(false));
-//     }, 1000);
-//   };
-
-//   return (
-//     <div className={css.App}>
-//       <Searchbar onSubmited={handleWriteValueInStateOfSubmit} />
-
-//       {visibleSpinerBool ? (
-//         <Loader visibleSpinerBool={visibleSpinerBool} />
-//       ) : (
-//         <ImageGallery gallerys={gallerys} />
-//       )}
-
-//       {gallerys.length !== totalHits && (
-//         <Button
-//           handleLoadMore={handleLoadMore}
-//           visibleSpinerBool={visibleSpinerBool}
-//         >
-//           Load More
-//         </Button>
-//       )}
-//       <ToastContainer />
-//     </div>
-//   );
-// }
-
-export default class App extends Component {
-  state = {
-    gallerys: [],
-    value: '',
-    visibleSpinerBool: false,
-    totalHits: 0,
-  };
-
-  handleWriteValueInStateOfSubmit = valueString => {
-    this.setState({ value: valueString });
+  const handleWriteValueInStateOfSubmit = valueString => {
+    setValue(valueString);
     requestApi.resetPage();
   };
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.value !== this.state.value) {
-      this.setState({ visibleSpinerBool: true });
-      requestApi.writeValue = this.state.value;
+  useEffect(() => {
+    if (value === '') return;
 
-      requestApi
-        .search()
-        .then(({ data: { totalHits, hits } }) => {
-          if (totalHits > 0) {
-            // hits це масив
-            // console.log(totalHits, total);
-            this.setState({ gallerys: hits, totalHits });
-          } else {
-            notify();
-          }
-        })
-        .catch(console.log)
-        .finally(this.setState({ visibleSpinerBool: false }));
-    }
-  }
+    setVisibleSpinerBool(true);
+    requestApi.writeValue = value;
 
-  handleLoadMore = () => {
-    this.setState({ visibleSpinerBool: true });
-    setTimeout(() => {
-      requestApi
-        .search()
-        .then(({ data: { hits } }) => {
-          this.setState(prevState => ({
-            gallerys: [...hits, ...prevState.gallerys],
-          }));
-        })
-        .catch(console.log)
-        .finally(this.setState({ visibleSpinerBool: false }));
-    }, 1000);
+    requestApi
+      .search()
+      .then(({ data: { totalHits, hits } }) => {
+        if (totalHits > 0) {
+          // hits це масив
+          // console.log(totalHits, total);
+          setGallerys(hits);
+          setTotalHits(totalHits);
+        } else {
+          notify();
+        }
+      })
+      .catch(console.log)
+      .finally(setVisibleSpinerBool(false));
+  }, [value]);
+
+  const handleLoadMore = () => {
+    setVisibleSpinerBool(true);
+
+    requestApi
+      .search()
+      .then(({ data: { hits } }) => {
+        setGallerys(prevGal => [...prevGal, ...hits]);
+      })
+      .catch(console.log)
+      .finally(setVisibleSpinerBool(false));
   };
 
-  render() {
-    const { gallerys, visibleSpinerBool, totalHits } = this.state;
+  return (
+    <div className={css.App}>
+      <Searchbar onSubmited={handleWriteValueInStateOfSubmit} />
 
-    return (
-      <div className={css.App}>
-        <Searchbar onSubmited={this.handleWriteValueInStateOfSubmit} />
+      {visibleSpinerBool ? (
+        <Loader visibleSpinerBool={visibleSpinerBool} />
+      ) : (
+        <ImageGallery gallerys={gallerys} />
+      )}
 
-        {visibleSpinerBool ? (
-          <Loader visibleSpinerBool={visibleSpinerBool} />
-        ) : (
-          <ImageGallery gallerys={gallerys} />
-        )}
-
-        {gallerys.length !== totalHits && (
-          <Button
-            handleLoadMore={this.handleLoadMore}
-            visibleSpinerBool={visibleSpinerBool}
-          >
-            Load More
-          </Button>
-        )}
-        <ToastContainer />
-      </div>
-    );
-  }
+      {gallerys.length !== totalHits && (
+        <Button
+          handleLoadMore={handleLoadMore}
+          visibleSpinerBool={visibleSpinerBool}
+        >
+          Load More
+        </Button>
+      )}
+      <ToastContainer />
+    </div>
+  );
 }
