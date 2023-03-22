@@ -75,7 +75,6 @@ export default class App extends Component {
 
   render() {
     const { gallerys, visibleSpinerBool, totalHits } = this.state;
-    console.log(totalHits);
 
     return (
       <div className={css.App}>
@@ -100,3 +99,79 @@ export default class App extends Component {
     );
   }
 }
+
+// export default class App extends Component {
+//   state = {
+//     gallerys: [],
+//     value: '',
+//     visibleSpinerBool: false,
+//     totalHits: 0,
+//   };
+
+//   handleWriteValueInStateOfSubmit = valueString => {
+//     this.setState({ value: valueString });
+//     requestApi.resetPage();
+//   };
+
+//   componentDidUpdate(_, prevState) {
+//     if (prevState.value !== this.state.value) {
+//       this.setState({ visibleSpinerBool: true });
+//       requestApi.writeValue = this.state.value;
+
+//       requestApi
+//         .search()
+//         .then(({ data: { totalHits, hits } }) => {
+//           if (totalHits > 0) {
+//             // hits це масив
+//             // console.log(totalHits, total);
+//             this.setState({ gallerys: hits, totalHits });
+//           } else {
+//             notify();
+//           }
+//         })
+//         .catch(console.log)
+//         .finally(this.setState({ visibleSpinerBool: false }));
+//     }
+//   }
+
+//   handleLoadMore = () => {
+//     this.setState({ visibleSpinerBool: true });
+//     setTimeout(() => {
+//       requestApi
+//         .search()
+//         .then(({ data: { hits } }) => {
+//           this.setState(prevState => ({
+//             gallerys: [...hits, ...prevState.gallerys],
+//           }));
+//         })
+//         .catch(console.log)
+//         .finally(this.setState({ visibleSpinerBool: false }));
+//     }, 1000);
+//   };
+
+//   render() {
+//     const { gallerys, visibleSpinerBool, totalHits } = this.state;
+
+//     return (
+//       <div className={css.App}>
+//         <Searchbar onSubmited={this.handleWriteValueInStateOfSubmit} />
+
+//         {visibleSpinerBool ? (
+//           <Loader visibleSpinerBool={visibleSpinerBool} />
+//         ) : (
+//           <ImageGallery gallerys={gallerys} />
+//         )}
+
+//         {gallerys.length !== totalHits && (
+//           <Button
+//             handleLoadMore={this.handleLoadMore}
+//             visibleSpinerBool={visibleSpinerBool}
+//           >
+//             Load More
+//           </Button>
+//         )}
+//         <ToastContainer />
+//       </div>
+//     );
+//   }
+// }

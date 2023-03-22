@@ -1,45 +1,35 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import css from './ImageGalleryItem.module.css';
 import PropTypes from 'prop-types';
 import Modal from 'components/Modal/Modal';
 
-export default class ImageGalleryItem extends Component {
-  state = { showModal: false };
+export default function ImageGalleryItem({ gallery }) {
+  const { ImageGalleryItem__image } = css;
+  const [showModal, setShowModal] = useState(false);
 
-  handleClickImg = () => {
-    this.setState({ showModal: true });
-  };
-
-  onCloseModal = e => {
+  const onCloseModal = e => {
+    console.log(e);
     if (e.code === 'Escape' || e.currentTarget === e.target)
-      this.setState({ showModal: false });
+      setShowModal(false);
   };
 
-  render() {
-    const { ImageGalleryItem__image } = css;
+  const { webformatURL, tags, largeImageURL } = gallery;
 
-    const {
-      gallery: { webformatURL, tags, largeImageURL },
-    } = this.props;
-
-    const { showModal } = this.state;
-
-    return (
-      <>
-        <img
-          src={webformatURL}
-          alt={tags}
-          className={ImageGalleryItem__image}
-          onClick={this.handleClickImg}
-        />
-        {showModal && (
-          <Modal onCloseModal={this.onCloseModal}>
-            <img src={largeImageURL} alt={tags} />
-          </Modal>
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      <img
+        src={webformatURL}
+        alt={tags}
+        className={ImageGalleryItem__image}
+        onClick={() => setShowModal(true)}
+      />
+      {showModal && (
+        <Modal onCloseModal={onCloseModal}>
+          <img src={largeImageURL} alt={tags} />
+        </Modal>
+      )}
+    </>
+  );
 }
 
 ImageGalleryItem.propTypes = {
